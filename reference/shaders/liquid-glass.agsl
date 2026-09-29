@@ -1,0 +1,65 @@
+// Liquid Glass — edge refraction for Android RuntimeShader (API 33+).
+// Also valid SkSL: usable from Skia-based stacks (Avalonia/SkiaSharp runtime effects,
+// Compose Desktop / Skiko, React Native Skia) that expose runtime-effect image filters.
+//
+// Usage (Android): chain AFTER blur + saturation, so it refracts the frosted backdrop:
+//   RenderEffect.createChainEffect(
+//       RenderEffect.createRuntimeShaderEffect(shader, "content"),   // outer: this file
+//       RenderEffect.createColorFilterEffect(saturation,             // inner: blur -> saturate
+//           RenderEffect.createBlurEffect(sigmaPx, sigmaPx, Shader.TileMode.CLAMP)))
+//
+// Fill, rim gradient and shadow are drawn by the UI toolkit on every tier; this shader only
+// bends the backdrop (tier T2) and adds optional dispersion (tier T3). Model: docs/03-optics.md.
+// All lengths are in pixels of the layer the effect is applied to.
+
+uniform shader content;
+uniform float2 size;        // layer size, px
+uniform float radius;       // corner radius, px (capsule: min(size) / 2)
+uniform float bezel;        // refraction band, px: clamp(minSide * 0.35, 8dp, 24dp), <= minSide / 2
+uniform float strength;     // max displacement at the rim, px (= bezel)
+uniform float ior;          // 1.5
+uniform float profile;      // bezel profile exponent, 3
+uniform float aberration;   // 0 (T2) .. 0.08 (T3)
+
+float sdRoundRect(float2 p, float2 b, float r) {
+    float2 q = abs(p) - b + r;
+    return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
+}
+
+float sdf(float2 p) {
+    return sdRoundRect(p - size * 0.5, size * 0.5, radius);
+}
+
+float profileH(float t) {
+    return pow(1.0 - pow(1.0 - t, profile), 1.0 / profile);
+}
+
+// Snell deflection across the bezel: 1 at the rim, 0 in the flat core.
+float deflection(float t) {
+    float theta = 1.5707963;
+    if (t > 0.001) {
+        float a = max(t - 0.002, 0.0);
+        float b = min(t + 0.002, 1.0);
+        theta = atan((profileH(b) - profileH(a)) / (b - a));
+    }
+    float thetaT = asin(sin(theta) / ior);
+    float edge = 1.5707963 - asin(1.0 / ior);
+    return tan(theta - thetaT) / tan(edge);
+}
+
+half4 main(float2 coord) {
+    float d = sdf(coord);
+    if (d > 0.0) return content.eval(coord);   // outside the shape: the caller clips anyway
+
+    float2 e = float2(0.5, 0.0);
+    float2 n = normalize(float2(sdf(coord + e.xy) - sdf(coord - e.xy),
+                                sdf(coord + e.yx) - sdf(coord - e.yx)) + 1e-5);
+    float t = clamp(-d / bezel, 0.0, 1.0);
+    float2 off = -n * deflection(t) * strength;   // inward: a convex bezel bends rays to the center
+
+    if (aberration <= 0.0) return content.eval(coord + off);
+    half4 c = content.eval(coord + off);
+    c.r = content.eval(coord + off * (1.0 + aberration)).r;
+    c.b = content.eval(coord + off * (1.0 - aberration)).b;
+    return c;
+}

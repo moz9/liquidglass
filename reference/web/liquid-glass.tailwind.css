@@ -1,0 +1,52 @@
+/*
+ * Tailwind CSS v4 adapter for Liquid Glass tokens.
+ *
+ *   @import "tailwindcss";
+ *   @import "./liquid-glass.css";
+ *   @import "./liquid-glass.tailwind.css";
+ *
+ * The glass itself stays in liquid-glass.css classes (.lg, .lg-btn, ...): pseudo-elements,
+ * masks and @property do not belong in utilities. This file only exposes the tokens:
+ *   rounded-glass-lg · ease-lg-snappy · text-glass-label · bg-glass-accent · blur-glass ·
+ *   backdrop-blur-glass-thick · lg-dark:text-white
+ */
+
+@theme inline {
+  --color-glass-label: var(--lgv-label);
+  --color-glass-label-2: var(--lgv-label-2);
+  --color-glass-accent: var(--lg-accent);
+  --color-glass-indicator: var(--lgv-indicator);
+  --color-glass-hover: var(--lgv-hover);
+
+  --radius-glass-xs: var(--lg-radius-xs);
+  --radius-glass-sm: var(--lg-radius-sm);
+  --radius-glass-md: var(--lg-radius-md);
+  --radius-glass-lg: var(--lg-radius-lg);
+  --radius-glass-xl: var(--lg-radius-xl);
+  --radius-glass-2xl: var(--lg-radius-2xl);
+
+  --blur-glass: 10px;
+  --blur-glass-clear: 2px;
+  --blur-glass-thick: 24px;
+
+  --ease-lg-interactive: var(--lg-ease-interactive);
+  --ease-lg-press: var(--lg-ease-press);
+  --ease-lg-release: var(--lg-ease-release);
+  --ease-lg-snappy: var(--lg-ease-snappy);
+  --ease-lg-morph: var(--lg-ease-morph);
+  --ease-lg-bouncy: var(--lg-ease-bouncy);
+  --ease-lg-smooth: var(--lg-ease-smooth);
+}
+
+/* Pair each easing with its spring settle time: `ease-lg-snappy duration-lg-snappy`. */
+@utility duration-lg-interactive { transition-duration: var(--lg-dur-interactive); }
+@utility duration-lg-press { transition-duration: var(--lg-dur-press); }
+@utility duration-lg-release { transition-duration: var(--lg-dur-release); }
+@utility duration-lg-snappy { transition-duration: var(--lg-dur-snappy); }
+@utility duration-lg-morph { transition-duration: var(--lg-dur-morph); }
+@utility duration-lg-bouncy { transition-duration: var(--lg-dur-bouncy); }
+@utility duration-lg-smooth { transition-duration: var(--lg-dur-smooth); }
+
+/* Style content by the glass appearance it sits on (adaptive glass flips data-lg-appearance). */
+@custom-variant lg-dark (&:where([data-lg-appearance="dark"], [data-lg-appearance="dark"] *));
+@custom-variant lg-light (&:where([data-lg-appearance="light"], [data-lg-appearance="light"] *));

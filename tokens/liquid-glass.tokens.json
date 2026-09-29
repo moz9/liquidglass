@@ -1,0 +1,293 @@
+{
+  "$description": "Liquid Glass design tokens. Calibrated approximations for non-Apple platforms (on Apple 26+ use the native material). Units: px at 1x = pt (Apple) = dp (Android) = epx (Windows). Blur values are Gaussian sigma. Motion uses SwiftUI spring semantics: response (s) + dampingRatio; stiffness/damping are for mass = 1. Format: W3C Design Tokens ($type/$value), readable by Style Dictionary v4.",
+  "material": {
+    "regular": {
+      "blur": { "$type": "dimension", "$value": "10px" },
+      "saturation": { "$type": "number", "$value": 1.8 },
+      "brightness": {
+        "light": { "$type": "number", "$value": 1.05 },
+        "dark": { "$type": "number", "$value": 0.92 }
+      },
+      "fill": {
+        "light": { "$type": "color", "$value": "rgb(255 255 255 / 0.20)" },
+        "dark": { "$type": "color", "$value": "rgb(30 30 34 / 0.36)" }
+      }
+    },
+    "clear": {
+      "blur": { "$type": "dimension", "$value": "2px" },
+      "saturation": { "$type": "number", "$value": 1.5 },
+      "brightness": {
+        "light": { "$type": "number", "$value": 1.08 },
+        "dark": { "$type": "number", "$value": 0.96 }
+      },
+      "fill": {
+        "light": { "$type": "color", "$value": "rgb(255 255 255 / 0.06)" },
+        "dark": { "$type": "color", "$value": "rgb(0 0 0 / 0.08)" }
+      },
+      "dimUnderneath": {
+        "$description": "Dimming layer placed between bright media and clear glass for legibility.",
+        "light": { "$type": "color", "$value": "rgb(0 0 0 / 0.22)" },
+        "dark": { "$type": "color", "$value": "rgb(0 0 0 / 0.30)" }
+      }
+    },
+    "thick": {
+      "$description": "Menus, popovers, sheets, alerts.",
+      "blur": { "$type": "dimension", "$value": "24px" },
+      "saturation": { "$type": "number", "$value": 1.8 },
+      "brightness": { "$type": "number", "$value": 1.0 },
+      "fill": {
+        "light": { "$type": "color", "$value": "rgb(248 248 250 / 0.72)" },
+        "dark": { "$type": "color", "$value": "rgb(40 40 44 / 0.72)" }
+      }
+    },
+    "tinted": {
+      "fillAccentShare": { "$type": "number", "$value": 0.30, "$description": "accent mixed with transparent" },
+      "saturation": { "$type": "number", "$value": 2.0 }
+    },
+    "prominent": {
+      "fillAccentShare": { "$type": "number", "$value": 0.86 },
+      "label": { "$type": "color", "$value": "#FFFFFF" }
+    },
+    "solid": {
+      "$description": "Tier T0 / Reduce Transparency: same silhouette, rim and shadow, no transparency.",
+      "fill": {
+        "light": { "$type": "color", "$value": "rgb(249 249 251 / 0.97)" },
+        "dark": { "$type": "color", "$value": "rgb(28 28 30 / 0.97)" }
+      }
+    }
+  },
+  "specular": {
+    "rimWidth": { "$type": "dimension", "$value": "1px" },
+    "lightAngle": { "$type": "number", "$value": 135, "$description": "CSS gradient angle in degrees: light comes from the top-left" },
+    "lightDirection": { "$type": "number", "$value": [-0.6, -0.8], "$description": "unit vector toward the light, screen space, y down (shaders)" },
+    "rim": {
+      "light": {
+        "lit": { "$type": "color", "$value": "rgb(255 255 255 / 0.90)" },
+        "side": { "$type": "color", "$value": "rgb(255 255 255 / 0.14)" },
+        "opposite": { "$type": "color", "$value": "rgb(255 255 255 / 0.50)" }
+      },
+      "dark": {
+        "lit": { "$type": "color", "$value": "rgb(255 255 255 / 0.50)" },
+        "side": { "$type": "color", "$value": "rgb(255 255 255 / 0.06)" },
+        "opposite": { "$type": "color", "$value": "rgb(255 255 255 / 0.24)" }
+      }
+    },
+    "sheen": {
+      "$description": "inner highlight along the top edge: inset 0 1px 1px <color>",
+      "light": { "$type": "color", "$value": "rgb(255 255 255 / 0.55)" },
+      "dark": { "$type": "color", "$value": "rgb(255 255 255 / 0.22)" }
+    },
+    "innerGlow": {
+      "$description": "thickness hint: inset 0 0 18px <color>",
+      "light": { "$type": "color", "$value": "rgb(255 255 255 / 0.12)" },
+      "dark": { "$type": "color", "$value": "rgb(255 255 255 / 0.05)" }
+    },
+    "touchGlow": {
+      "radius": { "$type": "dimension", "$value": "90px" },
+      "light": { "$type": "color", "$value": "rgb(255 255 255 / 0.55)" },
+      "dark": { "$type": "color", "$value": "rgb(255 255 255 / 0.30)" }
+    }
+  },
+  "shadow": {
+    "regular": {
+      "light": {
+        "$type": "shadow",
+        "$value": [
+          { "color": "rgb(0 0 0 / 0.18)", "offsetX": "0px", "offsetY": "10px", "blur": "30px", "spread": "-6px" },
+          { "color": "rgb(0 0 0 / 0.08)", "offsetX": "0px", "offsetY": "2px", "blur": "8px", "spread": "0px" },
+          { "color": "rgb(0 0 0 / 0.06)", "offsetX": "0px", "offsetY": "0px", "blur": "0px", "spread": "0.5px" }
+        ]
+      },
+      "dark": {
+        "$type": "shadow",
+        "$value": [
+          { "color": "rgb(0 0 0 / 0.50)", "offsetX": "0px", "offsetY": "12px", "blur": "36px", "spread": "-6px" },
+          { "color": "rgb(0 0 0 / 0.30)", "offsetX": "0px", "offsetY": "2px", "blur": "8px", "spread": "0px" },
+          { "color": "rgb(0 0 0 / 0.50)", "offsetX": "0px", "offsetY": "0px", "blur": "0px", "spread": "0.5px" }
+        ]
+      }
+    },
+    "elevated": {
+      "light": {
+        "$type": "shadow",
+        "$value": [
+          { "color": "rgb(0 0 0 / 0.28)", "offsetX": "0px", "offsetY": "24px", "blur": "60px", "spread": "-10px" },
+          { "color": "rgb(0 0 0 / 0.10)", "offsetX": "0px", "offsetY": "4px", "blur": "14px", "spread": "0px" },
+          { "color": "rgb(0 0 0 / 0.06)", "offsetX": "0px", "offsetY": "0px", "blur": "0px", "spread": "0.5px" }
+        ]
+      },
+      "dark": {
+        "$type": "shadow",
+        "$value": [
+          { "color": "rgb(0 0 0 / 0.65)", "offsetX": "0px", "offsetY": "28px", "blur": "70px", "spread": "-10px" },
+          { "color": "rgb(0 0 0 / 0.35)", "offsetX": "0px", "offsetY": "4px", "blur": "14px", "spread": "0px" },
+          { "color": "rgb(0 0 0 / 0.50)", "offsetX": "0px", "offsetY": "0px", "blur": "0px", "spread": "0.5px" }
+        ]
+      }
+    }
+  },
+  "refraction": {
+    "bezelRatio": { "$type": "number", "$value": 0.35, "$description": "bezel = clamp(minSide * ratio, min, max), never more than minSide / 2" },
+    "bezelMin": { "$type": "dimension", "$value": "8px" },
+    "bezelMax": { "$type": "dimension", "$value": "24px" },
+    "strengthRatio": { "$type": "number", "$value": 1.0, "$description": "max displacement at the rim = bezel * ratio" },
+    "ior": { "$type": "number", "$value": 1.5 },
+    "profileExponent": { "$type": "number", "$value": 3, "$description": "h(t) = (1 - (1 - t)^p)^(1/p); 2 = circle, 4 = squircle" },
+    "aberration": {
+      "lens": { "$type": "number", "$value": 0, "$description": "tier T2" },
+      "liquid": { "$type": "number", "$value": 0.08, "$description": "tier T3" }
+    }
+  },
+  "radius": {
+    "xs": { "$type": "dimension", "$value": "8px" },
+    "sm": { "$type": "dimension", "$value": "12px" },
+    "md": { "$type": "dimension", "$value": "18px" },
+    "lg": { "$type": "dimension", "$value": "24px" },
+    "xl": { "$type": "dimension", "$value": "32px" },
+    "2xl": { "$type": "dimension", "$value": "44px" },
+    "capsule": { "$type": "dimension", "$value": "9999px" },
+    "concentricMin": { "$type": "dimension", "$value": "6px" }
+  },
+  "size": {
+    "control": {
+      "sm": { "$type": "dimension", "$value": "28px", "$description": "desktop compact" },
+      "md": { "$type": "dimension", "$value": "36px", "$description": "desktop regular, items inside glass groups" },
+      "lg": { "$type": "dimension", "$value": "44px", "$description": "touch minimum (Apple)" },
+      "xl": { "$type": "dimension", "$value": "52px", "$description": "touch prominent" }
+    },
+    "hitTarget": {
+      "apple": { "$type": "dimension", "$value": "44px" },
+      "android": { "$type": "dimension", "$value": "48px" },
+      "windowsTouch": { "$type": "dimension", "$value": "40px" }
+    },
+    "tabBar": {
+      "height": { "$type": "dimension", "$value": "62px" },
+      "padding": { "$type": "dimension", "$value": "4px" },
+      "itemMinWidth": { "$type": "dimension", "$value": "68px" },
+      "searchButton": { "$type": "dimension", "$value": "62px" }
+    },
+    "group": {
+      "padding": { "$type": "dimension", "$value": "4px" },
+      "itemGap": { "$type": "dimension", "$value": "2px" }
+    },
+    "switch": {
+      "width": { "$type": "dimension", "$value": "64px" },
+      "height": { "$type": "dimension", "$value": "28px" },
+      "thumbWidth": { "$type": "dimension", "$value": "38px" },
+      "thumbPressedScale": { "$type": "number", "$value": 1.45 }
+    }
+  },
+  "spacing": {
+    "floatingInset": {
+      "phoneSide": { "$type": "dimension", "$value": "16px" },
+      "phoneBottom": { "$type": "dimension", "$value": "12px", "$description": "above the bottom safe area" },
+      "tablet": { "$type": "dimension", "$value": "20px" },
+      "desktop": { "$type": "dimension", "$value": "24px" }
+    },
+    "islandGap": { "$type": "dimension", "$value": "8px" },
+    "mergeDistance": { "$type": "dimension", "$value": "24px", "$description": "glass shapes closer than this melt together (container spacing / smooth-union k)" },
+    "scrollEdgeHeight": { "$type": "dimension", "$value": "96px" }
+  },
+  "typography": {
+    "fontFamily": {
+      "apple": { "$type": "fontFamily", "$value": ["system-ui"] },
+      "web": { "$type": "fontFamily", "$value": ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Inter", "Segoe UI Variable Text", "Segoe UI", "Roboto", "system-ui", "sans-serif"] },
+      "windows": { "$type": "fontFamily", "$value": ["Segoe UI Variable", "Inter"] },
+      "android": { "$type": "fontFamily", "$value": ["Inter", "Roboto Flex", "sans-serif"] }
+    },
+    "scale": {
+      "$description": "iOS Dynamic Type 'Large' (default). size/lineHeight/weight. macOS body is 13/16.",
+      "largeTitle": { "$type": "typography", "$value": { "fontSize": "34px", "lineHeight": "41px", "fontWeight": 700 } },
+      "title1": { "$type": "typography", "$value": { "fontSize": "28px", "lineHeight": "34px", "fontWeight": 700 } },
+      "title2": { "$type": "typography", "$value": { "fontSize": "22px", "lineHeight": "28px", "fontWeight": 700 } },
+      "title3": { "$type": "typography", "$value": { "fontSize": "20px", "lineHeight": "25px", "fontWeight": 600 } },
+      "headline": { "$type": "typography", "$value": { "fontSize": "17px", "lineHeight": "22px", "fontWeight": 600 } },
+      "body": { "$type": "typography", "$value": { "fontSize": "17px", "lineHeight": "22px", "fontWeight": 400 } },
+      "callout": { "$type": "typography", "$value": { "fontSize": "16px", "lineHeight": "21px", "fontWeight": 400 } },
+      "subheadline": { "$type": "typography", "$value": { "fontSize": "15px", "lineHeight": "20px", "fontWeight": 400 } },
+      "footnote": { "$type": "typography", "$value": { "fontSize": "13px", "lineHeight": "18px", "fontWeight": 400 } },
+      "caption1": { "$type": "typography", "$value": { "fontSize": "12px", "lineHeight": "16px", "fontWeight": 400 } },
+      "caption2": { "$type": "typography", "$value": { "fontSize": "11px", "lineHeight": "13px", "fontWeight": 400 } }
+    },
+    "onGlass": {
+      "button": { "$type": "typography", "$value": { "fontSize": "15px", "lineHeight": "15px", "fontWeight": 600, "letterSpacing": "-0.01em" } },
+      "tabLabel": { "$type": "typography", "$value": { "fontSize": "10px", "lineHeight": "11px", "fontWeight": 600 } },
+      "segment": { "$type": "typography", "$value": { "fontSize": "13px", "lineHeight": "13px", "fontWeight": 600 } },
+      "menuItem": { "$type": "typography", "$value": { "fontSize": "15px", "lineHeight": "15px", "fontWeight": 500 } }
+    }
+  },
+  "color": {
+    "label": {
+      "light": { "$type": "color", "$value": "rgb(0 0 0 / 0.88)" },
+      "dark": { "$type": "color", "$value": "rgb(255 255 255 / 0.94)" }
+    },
+    "secondaryLabel": {
+      "light": { "$type": "color", "$value": "rgb(60 60 67 / 0.62)" },
+      "dark": { "$type": "color", "$value": "rgb(235 235 245 / 0.60)" }
+    },
+    "indicator": {
+      "light": { "$type": "color", "$value": "rgb(120 120 128 / 0.18)" },
+      "dark": { "$type": "color", "$value": "rgb(255 255 255 / 0.14)" }
+    },
+    "hover": {
+      "light": { "$type": "color", "$value": "rgb(120 120 128 / 0.12)" },
+      "dark": { "$type": "color", "$value": "rgb(255 255 255 / 0.10)" }
+    },
+    "pageBackground": {
+      "light": { "$type": "color", "$value": "#F2F2F7" },
+      "dark": { "$type": "color", "$value": "#000000" }
+    },
+    "system": {
+      "$description": "Approximation of iOS 26 system colors for non-Apple platforms. On Apple platforms always use semantic system colors.",
+      "blue": { "light": { "$type": "color", "$value": "#0088FF" }, "dark": { "$type": "color", "$value": "#0091FF" } },
+      "green": { "light": { "$type": "color", "$value": "#34C759" }, "dark": { "$type": "color", "$value": "#30D158" } },
+      "red": { "light": { "$type": "color", "$value": "#FF383C" }, "dark": { "$type": "color", "$value": "#FF4245" } },
+      "orange": { "light": { "$type": "color", "$value": "#FF8D28" }, "dark": { "$type": "color", "$value": "#FF9230" } },
+      "yellow": { "light": { "$type": "color", "$value": "#FFCC00" }, "dark": { "$type": "color", "$value": "#FFD600" } },
+      "mint": { "light": { "$type": "color", "$value": "#00C8B3" }, "dark": { "$type": "color", "$value": "#00DAC3" } },
+      "teal": { "light": { "$type": "color", "$value": "#00C3D0" }, "dark": { "$type": "color", "$value": "#00D2E0" } },
+      "cyan": { "light": { "$type": "color", "$value": "#00C0E8" }, "dark": { "$type": "color", "$value": "#3CD3FE" } },
+      "indigo": { "light": { "$type": "color", "$value": "#6155F5" }, "dark": { "$type": "color", "$value": "#6D7CFF" } },
+      "purple": { "light": { "$type": "color", "$value": "#CB30E0" }, "dark": { "$type": "color", "$value": "#DB34F2" } },
+      "pink": { "light": { "$type": "color", "$value": "#FF2D55" }, "dark": { "$type": "color", "$value": "#FF375F" } },
+      "brown": { "light": { "$type": "color", "$value": "#AC7F5E" }, "dark": { "$type": "color", "$value": "#B78A66" } },
+      "gray": { "light": { "$type": "color", "$value": "#8E8E93" }, "dark": { "$type": "color", "$value": "#8E8E93" } }
+    }
+  },
+  "adaptive": {
+    "toDarkBelowLuminance": { "$type": "number", "$value": 0.4 },
+    "toLightAboveLuminance": { "$type": "number", "$value": 0.6 },
+    "transition": { "$type": "duration", "$value": "300ms" }
+  },
+  "motion": {
+    "$description": "Springs. Regenerate platform values with: node tools/spring.mjs --tokens",
+    "interactive": { "response": { "$type": "number", "$value": 0.15 }, "dampingRatio": { "$type": "number", "$value": 0.86 }, "stiffness": { "$type": "number", "$value": 1754.6 }, "damping": { "$type": "number", "$value": 72.05 }, "settleMs": { "$type": "number", "$value": 210 }, "$description": "follows the finger/pointer (drag)" },
+    "press": { "response": { "$type": "number", "$value": 0.22 }, "dampingRatio": { "$type": "number", "$value": 0.65 }, "stiffness": { "$type": "number", "$value": 815.7 }, "damping": { "$type": "number", "$value": 37.13 }, "settleMs": { "$type": "number", "$value": 363 }, "$description": "glass swells on press" },
+    "release": { "response": { "$type": "number", "$value": 0.38 }, "dampingRatio": { "$type": "number", "$value": 0.55 }, "stiffness": { "$type": "number", "$value": 273.4 }, "damping": { "$type": "number", "$value": 18.19 }, "settleMs": { "$type": "number", "$value": 764 }, "$description": "jelly return after release" },
+    "snappy": { "response": { "$type": "number", "$value": 0.30 }, "dampingRatio": { "$type": "number", "$value": 0.85 }, "stiffness": { "$type": "number", "$value": 438.6 }, "damping": { "$type": "number", "$value": 35.6 }, "settleMs": { "$type": "number", "$value": 419 }, "$description": "selection, toggles, small state changes" },
+    "morph": { "response": { "$type": "number", "$value": 0.42 }, "dampingRatio": { "$type": "number", "$value": 0.78 }, "stiffness": { "$type": "number", "$value": 223.8 }, "damping": { "$type": "number", "$value": 23.34 }, "settleMs": { "$type": "number", "$value": 555 }, "$description": "button -> menu, merge/split" },
+    "bouncy": { "response": { "$type": "number", "$value": 0.50 }, "dampingRatio": { "$type": "number", "$value": 0.70 }, "stiffness": { "$type": "number", "$value": 157.9 }, "damping": { "$type": "number", "$value": 17.59 }, "settleMs": { "$type": "number", "$value": 819 }, "$description": "materialize small glass" },
+    "smooth": { "response": { "$type": "number", "$value": 0.50 }, "dampingRatio": { "$type": "number", "$value": 1.0 }, "stiffness": { "$type": "number", "$value": 157.9 }, "damping": { "$type": "number", "$value": 25.13 }, "settleMs": { "$type": "number", "$value": 735 }, "$description": "sheets, large panels, Reduce Motion" },
+    "lead": { "response": { "$type": "number", "$value": 0.24 }, "dampingRatio": { "$type": "number", "$value": 0.80 }, "$description": "selection indicator: leading edge" },
+    "trail": { "response": { "$type": "number", "$value": 0.42 }, "dampingRatio": { "$type": "number", "$value": 0.74 }, "$description": "selection indicator: trailing edge" },
+    "dismiss": { "response": { "$type": "number", "$value": 0.28 }, "dampingRatio": { "$type": "number", "$value": 1.0 }, "$description": "closing menus/popovers: fast, no bounce" },
+    "interaction": {
+      "pressGrow": { "$type": "dimension", "$value": "8px", "$description": "growth of the longer side on press; scale = 1 + grow / maxSide" },
+      "pressMaxScale": { "$type": "number", "$value": 1.12 },
+      "dragStretch": { "$type": "number", "$value": 0.06 },
+      "dragFollow": { "$type": "dimension", "$value": "4px" },
+      "rubberBandC": { "$type": "number", "$value": 0.55 },
+      "velocityStretchPerPxPerS": { "$type": "number", "$value": 0.000385, "$description": "stretch = min(maxVelocityStretch, |v| * k)" },
+      "maxVelocityStretch": { "$type": "number", "$value": 0.22 },
+      "indicatorLensScale": { "$type": "number", "$value": 1.10 },
+      "morphContentFadeStart": { "$type": "number", "$value": 0.55, "$description": "morph progress where the target content starts fading in" }
+    }
+  },
+  "budget": {
+    "$description": "Max simultaneously visible glass surfaces with a live backdrop / with refraction.",
+    "mobile": { "surfaces": { "$type": "number", "$value": 4 }, "refraction": { "$type": "number", "$value": 2 } },
+    "desktop": { "surfaces": { "$type": "number", "$value": 8 }, "refraction": { "$type": "number", "$value": 4 } },
+    "blurredAreaShareMax": { "$type": "number", "$value": 0.35, "$description": "share of the viewport covered by live-blurred glass" },
+    "glassGpuMsMax": { "$type": "number", "$value": 2.5, "$description": "GPU time spent on glass per frame" }
+  }
+}
