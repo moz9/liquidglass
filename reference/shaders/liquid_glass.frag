@@ -1,3 +1,6 @@
+#version 460 core
+#include <flutter/runtime_effect.glsl>
+
 // Liquid Glass — edge refraction for Flutter `ImageFilter.shader` (Impeller only).
 //
 //   BackdropFilter(
@@ -15,9 +18,6 @@
 // whole backdrop or only the clip bounds depends on the engine version/backend: turn on uDebug,
 // check that the red shape sits exactly under your widget, and adjust uRect once.
 // Model: docs/03-optics.md. Fill, rim and shadow are drawn by widgets on every tier.
-
-#version 460 core
-#include <flutter/runtime_effect.glsl>
 
 uniform vec2 uSize;          // index 0-1: set by the engine
 uniform sampler2D uTexture;  // set by the engine

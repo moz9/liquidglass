@@ -4,6 +4,12 @@
 
 **Агентам:** начинайте с [AGENTS.md](AGENTS.md).
 
+| Материал: regular / clear / tinted / prominent, рефракция кромки (T2) | Шейдерное стекло (T3): капли сливаются |
+|---|---|
+| ![Варианты материала и компоненты эталонной веб-реализации](docs/img/preview-materials.png) | ![Слияние стеклянных капель в WebGL](docs/img/preview-droplets.png) |
+
+*Скриншоты эталонной веб-реализации (`reference/web/demo.html`) в Chromium.*
+
 ## Что внутри
 
 ```
