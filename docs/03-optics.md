@@ -1,5 +1,7 @@
 # 03. Оптика: как считать преломление, блик и слияние
 
+> Этот документ описывает исходные приближения и приёмы примеров. Приоритет имеют [AGENTS.md](../AGENTS.md), [Apple 26/27](apple-native.md), [ограничения реализации](emulation.md) и [актуальная приёмка](08-checklist.md). Числа и реакции не являются универсальными требованиями Apple; настройки плотности и доступности проверяются отдельно.
+
 Одна модель для всех платформ. Эталонные реализации:
 - CPU-карта смещений (для SVG/Win2D/Skia displacement map): [`reference/web/liquid-glass.js`](../reference/web/liquid-glass.js) — `refractionProfile()`, `displacementMap()`;
 - GPU-шейдер (для WebGL, AGSL, Flutter, HLSL, движков): [`reference/shaders/`](../reference/shaders/).
@@ -84,7 +86,7 @@ scale фильтра = 2 × strength
 ## 4. Материал поверх выборки
 
 ```glsl
-col = blurredBackdrop(p + offset);                  // σ из токенов; blur ДО или ПОСЛЕ смещения — оба варианта ок
+col = blurredBackdrop(p + offset);                  // σ из токенов; порядок blur/displacement влияет на вид; калибруй по референсу
 col = mix(vec3(luma(col)), col, 1.6..1.8);          // насыщенность
 col *= brightness;                                  // 1.05 light / 0.92 dark
 col = mix(col, fillColor, fillAlpha);               // адаптивная заливка

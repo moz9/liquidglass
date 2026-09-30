@@ -1,15 +1,15 @@
 ---
 name: liquid-glass
-description: Build or restyle UI in Apple's Liquid Glass style (iOS/macOS 26–27) on any platform — web (CSS/React/Vue/Svelte/Angular/Tailwind), Windows (WinUI 3/WPF/Avalonia), Android (Compose/Views), Flutter, React Native, MAUI, Qt, game engines. Use for glass tab bars, toolbars, buttons, menus, sheets, refraction/blur materials and liquid spring animations.
+description: Create and verify Liquid Glass interfaces for Apple 26/27, web, Windows, Android and other UI, with native rendering or calibrated optical approximations and an appearance slider.
 ---
 
 # Liquid Glass
 
-This skill lives in the Liquid Glass repository. Its root is three levels up from this file (`../../../`); if you copied the skill into another project, the root is wherever the repository is checked out (for example `design/liquidglass/`).
+Навык находится в репозитории Liquid Glass; его корень — `../../../` относительно этой папки. Если навык скопирован отдельно, используй каталог подключённого репозитория (например, `design/liquidglass/`).
 
-1. Read `AGENTS.md` in the repository root completely — it is the entry point (algorithm, routing by stack, golden rules, tiers, motion).
-2. Read `docs/01-principles.md`, `docs/02-tokens.md`, `docs/05-motion.md`, `docs/08-checklist.md`, then the guide for the detected stack in `platforms/`.
-3. Reuse the reference code in `reference/` (web runtime, shaders) instead of writing the material from scratch.
-4. Verify with screenshots on white / black / colorful backgrounds in light and dark themes and with the checklist before reporting.
+1. Прочитай `AGENTS.md` в корне репозитория — единую точку входа.
+2. Выбери указанный там маршрут для native Apple или имитации; подробные платформенные примеры читай выборочно после ограничений.
+3. Реализуй запрошенный интерфейс, включая настройку Liquid Glass «Прозрачный → Плотный» с живым превью и сохранением.
+4. Проверь результат по `docs/08-checklist.md`; отдельно обозначь реализацию, сборку, визуальную проверку и оставшиеся приближения.
 
-Documentation is in Russian; answer the user in their language.
+Документация — на русском; отвечай на языке пользователя.

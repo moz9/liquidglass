@@ -1,17 +1,11 @@
 ---
-description: Liquid Glass UI (Apple iOS/macOS 26–27 style) for any platform — read before building or restyling UI components, navigation bars, buttons, menus, sheets, animations
+description: Liquid Glass UI for Apple, web, Windows and other platforms — native rendering, calibrated optics and user appearance settings
 globs:
 alwaysApply: false
 ---
 
 # Liquid Glass
 
-Перед работой с UI прочитай `AGENTS.md` в корне репозитория Liquid Glass (при подключении подмодулем — например `design/liquidglass/AGENTS.md`) и гайд своего стека в `platforms/`.
+Прочитай `AGENTS.md` в корне репозитория Liquid Glass (при подключении подмодулем — например `design/liquidglass/AGENTS.md`) и выбранный там маршрут. Это единый источник требований, включая различия Apple 26/27 и ползунок «Прозрачный → Плотный» в настройках продукта.
 
-Не нарушать:
-- стекло только в слое навигации/управления; контент — не стекло; нет стекла на стекле;
-- линза, а не матовое стекло: blur σ 10, saturate 1.8, заливка ≈ 20 %, rim 1 px 135°, рефракция кромки (T2);
-- капсулы, концентричные радиусы, плавающие элементы, scroll edge effect вместо разделителей;
-- все анимации — пружины из токенов (`node tools/spring.mjs`), прерываемые; нажатие набухает и светится; индикатор — капля; меню морфится из кнопки;
-- уровни T0–T3, доступность (Reduce Transparency / Contrast / Motion, forced colors) обязательна;
-- на Apple 26+ — только нативные API; SF Pro / SF Symbols вне Apple не встраивать; не выдумывать API.
+Используй примеры с учётом описанных ограничений, проверь реальный backdrop, доступность и внешний вид. Не дублируй старые фиксированные рецепты материала в правилах проекта.
