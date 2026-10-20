@@ -15,10 +15,19 @@
     svg.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
     /* Floating chrome: islands with a margin from the edges, content scrolls underneath */
-    .demo-top { position: fixed; z-index: 10; top: max(12px, env(safe-area-inset-top)); left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; }
+    .demo-top { position: fixed; z-index: 10; top: max(12px, env(safe-area-inset-top)); left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; flex-wrap: wrap; }
     .demo-top > * { pointer-events: auto; }
-    .demo-top .right { display: flex; gap: 8px; }
+    .demo-top .right { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
     .tier-chip { font: 600 13px/1 var(--lg-font); padding: 0 12px; }
+    /* Narrow screens: the floating bar keeps one row, so the content below stays readable. */
+    @media (max-width: 480px) {
+      .tier-chip { font-size: 11px; padding: 0 8px; }
+      .demo-top { gap: 6px; }
+      .demo-top .right { gap: 6px; }
+    }
+    @media (max-width: 400px) {
+      #tierChip { display: none; }
+    }
     .demo-bottom { position: fixed; z-index: 10; left: 0; right: 0; bottom: max(14px, env(safe-area-inset-bottom)); display: flex; justify-content: center; align-items: center; gap: 10px; pointer-events: none; }
     .demo-bottom > * { pointer-events: auto; }
     .demo-search { width: 62px; height: 62px; }
@@ -66,6 +75,11 @@
     .optics-section { background: #0b1024; color: #fff; }
     .optics-section .lg-seg { margin-top: 24px; }
     .optics-section .lg-seg__item { min-width: 128px; white-space: nowrap; }
+    /* Narrow screens: the three labels share the width instead of pushing the page wider. */
+    @media (max-width: 560px) {
+      .optics-section .lg-seg { width: 100%; }
+      .optics-section .lg-seg__item { min-width: 0; padding: 0 6px; font-size: 12px; }
+    }
     .optics-stage { position: relative; height: 340px; margin-top: 20px; border-radius: 28px; overflow: hidden; }
     .optics-grid { position: absolute; inset: -60%;
       background:
@@ -80,15 +94,6 @@
     .optics-tile { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(460px, 86%); height: 152px; border-radius: 34px; display: grid; place-items: center; text-align: center; }
     .optics-tile strong { display: block; font: 700 27px/1.15 var(--lg-font); letter-spacing: -0.02em; }
     .optics-tile span { display: block; font: 500 14px/1.3 var(--lg-font); opacity: 0.82; margin-top: 7px; }
-    /* A/B of the two effects on identical content: refraction only, blur only, both. */
-    .optics-stage[data-mode="lens"] .optics-tile::before {
-      -webkit-backdrop-filter: saturate(var(--lg-saturate)) brightness(var(--lg-brightness));
-      backdrop-filter: var(--lg-refract,) saturate(var(--lg-saturate)) brightness(var(--lg-brightness));
-    }
-    .optics-stage[data-mode="blur"] .optics-tile::before {
-      -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(var(--lg-brightness));
-      backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(var(--lg-brightness));
-    }
     .optics-note { margin-top: 16px; font: 400 15px/1.5 var(--lg-font); opacity: 0.82; max-width: 720px; }
 
     .gl-section { background: #0b1024; color: #fff; }
@@ -221,7 +226,7 @@
         </div>
         <div class="optics-stage" id="opticsStage" data-mode="lens-blur">
           <div class="optics-grid" aria-hidden="true"></div>
-          <div class="lg optics-tile lg-lens">
+          <div class="lg optics-tile">
             <div>
               <strong>Набережная</strong>
               <span>Линии фона гнутся у кромки, текст — нет</span>
@@ -344,7 +349,7 @@
   </div>
 
   <script type="module">
-    import { initLiquidGlass, liquidIndicator, morphOpen, setTier, getTier, Spring, springDriver, MOTION, prefersReducedMotion } from './liquid-glass.js';
+    import { initLiquidGlass, liquidIndicator, morphOpen, setTier, getTier, enhance, Spring, springDriver, MOTION, prefersReducedMotion } from './liquid-glass.js';
     import { createLiquidGlassCanvas } from './liquid-glass-webgl.js';
 
     const params = new URLSearchParams(location.search);
@@ -414,16 +419,35 @@
     const settings = document.getElementById('settings');
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsClose = document.getElementById('settingsClose');
+    const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const background = [...document.body.children].filter((el) => el !== settings);
     let lastFocus = null;
+    const focusables = () => [...settings.querySelectorAll(FOCUSABLE)].filter((el) => el.getClientRects().length > 0);
+    // A modal keeps the keyboard inside: Tab wraps at the edges, and the background
+    // is inert while the panel is open, so nothing behind it can be reached.
+    const trapTab = (e) => {
+      if (settings.hidden || e.key !== 'Tab') return;
+      const items = focusables();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (!settings.contains(active)) { e.preventDefault(); first.focus(); return; }
+      if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+    };
+    const setBackgroundInert = (value) => background.forEach((el) => { if (el instanceof HTMLElement) el.inert = value; });
     const openSettings = () => {
       lastFocus = document.activeElement;
       settings.hidden = false;
+      setBackgroundInert(true);
       settingsBtn.setAttribute('aria-expanded', 'true');
       refreshDensityState();
       requestAnimationFrame(() => (density.disabled ? settingsClose : density).focus({ preventScroll: true }));
     };
     const closeSettings = () => {
       settings.hidden = true;
+      setBackgroundInert(false);
       settingsBtn.setAttribute('aria-expanded', 'false');
       (lastFocus ?? settingsBtn).focus?.({ preventScroll: true });
     };
@@ -431,6 +455,7 @@
     settingsClose.addEventListener('click', closeSettings);
     settings.addEventListener('click', (e) => { if (e.target === settings) closeSettings(); });
     addEventListener('keydown', (e) => { if (e.key === 'Escape' && !settings.hidden) closeSettings(); });
+    addEventListener('keydown', trapTab);
 
     // --- tier chip ---------------------------------------------------------------------
     const chip = document.getElementById('tierChip');
@@ -441,6 +466,7 @@
 
     // --- Optics: A/B of refraction and blur on the same live content ---------------------
     const opticsStage = document.getElementById('opticsStage');
+    const opticsTile = document.querySelector('.optics-tile');
     const opticsNote = document.getElementById('opticsNote');
     const OPTICS_MODES = ['lens-blur', 'lens', 'blur'];
     const OPTICS_TEXT = {
@@ -448,12 +474,30 @@
       lens: 'Только линза: линии у кромки смещаются, но остаются резкими — это преломление без рассеивания.',
       blur: 'Только blur: линии размыты, но их геометрия не меняется. Так выглядит стекло без линзы (T1).',
     };
+    // The A/B modes change what the material samples, never the backdrop-filter property
+    // itself. The library keeps control of that property, so Reduce Transparency and
+    // forced colors still switch the backdrop off in every mode.
+    let opticsLens = null;
+    function applyOpticsMode() {
+      const mode = opticsStage.dataset.mode;
+      const wantsLens = mode !== 'blur' && getTier() >= 2;
+      if (wantsLens) {
+        if (!opticsLens) opticsLens = enhance(opticsTile, { lens: true });
+        if (mode === 'lens') opticsTile.style.setProperty('--lg-blur', '0px');
+        else opticsTile.style.removeProperty('--lg-blur');
+      } else {
+        opticsLens?.();
+        opticsLens = null;
+        opticsTile.style.removeProperty('--lg-blur');
+      }
+    }
     function updateOpticsNote() {
       const mode = opticsStage.dataset.mode;
       const tier = getTier();
       opticsNote.textContent = tier >= 2
         ? OPTICS_TEXT[mode]
         : `${OPTICS_TEXT[mode]} Сейчас движок работает на ${names[tier]}: SVG-линза не используется, поэтому смещения у кромки не будет.`;
+      applyOpticsMode();
     }
     liquidIndicator(document.getElementById('opticsMode'), {
       selected: 0,

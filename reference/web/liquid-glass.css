@@ -303,6 +303,11 @@ html[data-lg-tier="0"] .lg-prominent { --lg-fill: var(--lg-tint, var(--lg-accent
 @media (prefers-contrast: more) {
   .lg:not(.lg-prominent) { --lg-fill: var(--lgv-solid); }
   .lg-prominent { --lg-fill: var(--lg-tint, var(--lg-accent)); }
+  /* The surface is opaque here, so sampling the backdrop is invisible work: switch it off. */
+  .lg::before {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
   .lg::after { background: var(--lgv-label-2); }
   .lg { --lgv-label-2: var(--lgv-label); }
 }
