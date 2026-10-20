@@ -73,7 +73,7 @@ git submodule add https://github.com/moz9/liquidglass design/liquidglass
 design/liquidglass/AGENTS.md и следуй ему (пути в нём — относительно design/liquidglass/).
 ```
 
-- **Claude Code:** в `CLAUDE.md` проекта можно импортировать файл напрямую: `@design/liquidglass/AGENTS.md`. Навык из `.claude/skills/liquid-glass/` можно скопировать в `.claude/skills/` проекта.
+- **Claude Code:** в `CLAUDE.md` проекта можно импортировать файл напрямую: `@design/liquidglass/AGENTS.md`. Навык из `adapters/claude/liquid-glass/` можно скопировать в `.claude/skills/` проекта. Адаптеры лежат в `adapters/`, а не в `.claude/skills/`, чтобы рантайм, который сканирует рабочую папку (в том числе MiniMax Code с `.claude/skills/`), не подхватывал второй, расходящийся снимок того же скилла.
 - **Cursor:** скопируйте `.cursor/rules/liquid-glass.mdc` в `.cursor/rules/` проекта и поправьте пути.
 - **GitHub Copilot:** добавьте абзац выше в `.github/copilot-instructions.md` проекта.
 
