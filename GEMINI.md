@@ -1,1 +1,1 @@
-Инструкции для агентов находятся в [AGENTS.md](AGENTS.md) — прочитай его целиком перед работой над интерфейсом в стиле Liquid Glass.
+Инструкции для агентов находятся в [AGENTS.md](AGENTS.md) — прочитай его целиком перед работой над интерфейсом в стиле Liquid Glass. Для web настройка плотности готова: `--lg-density` в `reference/web/liquid-glass.css` и панель внешнего вида в `reference/web/demo.html`.

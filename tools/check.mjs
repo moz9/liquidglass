@@ -96,6 +96,20 @@ for (const [sel, tok] of [['.lg', tokens.material.regular.blur], ['.lg-clear', t
   if (`${blurOf(sel)}px` !== tok.$value) fail(`CSS ${sel} --lg-blur = ${blurOf(sel)}px but tokens say ${tok.$value}`);
 }
 
+// --- material density: tokens JSON == CSS custom properties -------------------------
+// The appearance setting is one number for the whole app; its mapping must not drift.
+const rootBlock = cssBlock(':root');
+for (const [name, tok] of [
+  ['--lg-density-fill-min', tokens.material.density.fillMin],
+  ['--lg-density-fill-max', tokens.material.density.fillMax],
+  ['--lg-density-accent-min', tokens.material.density.accentMin],
+  ['--lg-density-accent-max', tokens.material.density.accentMax],
+]) {
+  const v = cssVar(rootBlock, name);
+  if (v === undefined) fail(`CSS :root lacks ${name}`);
+  else if (Number(v) !== Number(tok.$value)) fail(`CSS ${name} = ${v} but tokens say ${tok.$value}`);
+}
+
 // --- shader copy -----------------------------------------------------------------
 if (!existsSync(join(root, GLSL)) || read(GLSL) !== GLSL_HEADER + FRAGMENT_SHADER)
   fail(`${GLSL} is out of sync with FRAGMENT_SHADER (run: node tools/check.mjs --write)`);

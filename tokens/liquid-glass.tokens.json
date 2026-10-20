@@ -49,11 +49,19 @@
       "label": { "$type": "color", "$value": "#FFFFFF" }
     },
     "solid": {
-      "$description": "Tier T0 / Reduce Transparency: same silhouette, rim and shadow, no transparency.",
+      "$description": "Tier T0 / Reduce Transparency: same silhouette, rim and shadow, no transparency. Fully opaque (alpha 1) on every surface, the primary action included.",
       "fill": {
-        "light": { "$type": "color", "$value": "rgb(249 249 251 / 0.97)" },
-        "dark": { "$type": "color", "$value": "rgb(28 28 30 / 0.97)" }
+        "light": { "$type": "color", "$value": "rgb(249 249 251)" },
+        "dark": { "$type": "color", "$value": "rgb(28 28 30)" }
       }
+    },
+    "density": {
+      "$description": "Appearance setting 'Liquid Glass': 0 = transparent, 1 = dense. Scales the fill of transparent materials only; geometry, foreground, refraction, blur and motion stay independent.",
+      "fillMin": { "$type": "number", "$value": 0.34, "$description": "Neutral fill multiplier at the transparent end of the range." },
+      "fillMax": { "$type": "number", "$value": 1, "$description": "Neutral fill multiplier at the dense end of the range: the calibrated token." },
+      "accentMin": { "$type": "number", "$value": 0.78, "$description": "Tint fill multiplier at the transparent end; kept higher so a labelled action stays readable." },
+      "accentMax": { "$type": "number", "$value": 1, "$description": "Tint fill multiplier at the dense end." },
+      "default": { "$type": "number", "$value": 0.5, "$description": "Default for a product built on this material: the middle of the range, where the transparent end still reads as glass." }
     }
   },
   "specular": {
