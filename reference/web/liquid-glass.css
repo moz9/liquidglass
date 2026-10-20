@@ -304,13 +304,16 @@ html[data-lg-tier="0"] .lg-switch input:active ~ .lg-switch__thumb {
   }
   .lg:not(.lg-prominent) { --lg-fill: var(--lgv-solid); }
   .lg-prominent { --lg-fill: var(--lg-tint, var(--lg-accent)); }
-  .lg-switch input:active ~ .lg-switch__thumb {
+  /* `:root` lifts these rules above the component rules further down the file:
+     a media query adds no specificity of its own, so without it the later
+     `.lg-switch input:active ~ .lg-switch__thumb` would win again. */
+  :root .lg-switch input:active ~ .lg-switch__thumb {
     background: var(--lgv-solid);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
   /* The scroll edge samples the backdrop too. */
-  .lg-scroll-edge {
+  :root .lg-scroll-edge {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -324,14 +327,14 @@ html[data-lg-tier="0"] .lg-switch input:active ~ .lg-switch__thumb {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-  .lg-switch input:active ~ .lg-switch__thumb {
+  :root .lg-switch input:active ~ .lg-switch__thumb {
     background: var(--lgv-solid);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
   /* A blurred scroll edge softens the text under the bar, which is exactly what
      increased contrast asks to remove. */
-  .lg-scroll-edge {
+  :root .lg-scroll-edge {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
