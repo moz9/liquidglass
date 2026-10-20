@@ -781,7 +781,13 @@ export function fpsGuard({ sampleMs = 2500, slowShare = 0.2, onDowngrade } = {})
 export function initLiquidGlass({ root = document, tier: forced = 'auto', guard = true } = {}) {
   if (!hasWindow) return () => {};
   const cleanups = [];
-  const refreshTier = () => setTier(forced === 'auto' ? detectTier() : forced);
+  // Accessibility wins over a forced quality level: an explicit tier must not
+  // re-enable backdrop sampling when the system asks for an opaque material.
+  const refreshTier = () => {
+    const requested = forced === 'auto' ? detectTier() : forced;
+    const opaque = mq('(forced-colors: active)') || mq('(prefers-reduced-transparency: reduce)');
+    setTier(opaque ? 0 : requested);
+  };
   refreshTier();
   for (const q of ['(prefers-reduced-transparency: reduce)', '(forced-colors: active)']) {
     const m = matchMedia(q);

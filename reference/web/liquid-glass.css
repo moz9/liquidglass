@@ -290,6 +290,12 @@ html[data-lg-tier="0"] .lg::before {
 /* T0 is opaque on EVERY surface: the primary action keeps the accent at full alpha. */
 html[data-lg-tier="0"] .lg:not(.lg-prominent) { --lg-fill: var(--lgv-solid); }
 html[data-lg-tier="0"] .lg-prominent { --lg-fill: var(--lg-tint, var(--lg-accent)); }
+/* The pressed switch thumb is a lens of its own: in an opaque mode it must stay opaque. */
+html[data-lg-tier="0"] .lg-switch input:active ~ .lg-switch__thumb {
+  background: var(--lgv-solid);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
 
 @media (prefers-reduced-transparency: reduce) {
   .lg::before {
@@ -298,6 +304,16 @@ html[data-lg-tier="0"] .lg-prominent { --lg-fill: var(--lg-tint, var(--lg-accent
   }
   .lg:not(.lg-prominent) { --lg-fill: var(--lgv-solid); }
   .lg-prominent { --lg-fill: var(--lg-tint, var(--lg-accent)); }
+  .lg-switch input:active ~ .lg-switch__thumb {
+    background: var(--lgv-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* The scroll edge samples the backdrop too. */
+  .lg-scroll-edge {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 @media (prefers-contrast: more) {
@@ -305,6 +321,17 @@ html[data-lg-tier="0"] .lg-prominent { --lg-fill: var(--lg-tint, var(--lg-accent
   .lg-prominent { --lg-fill: var(--lg-tint, var(--lg-accent)); }
   /* The surface is opaque here, so sampling the backdrop is invisible work: switch it off. */
   .lg::before {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .lg-switch input:active ~ .lg-switch__thumb {
+    background: var(--lgv-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* A blurred scroll edge softens the text under the bar, which is exactly what
+     increased contrast asks to remove. */
+  .lg-scroll-edge {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

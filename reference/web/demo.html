@@ -483,13 +483,14 @@
       const wantsLens = mode !== 'blur' && getTier() >= 2;
       if (wantsLens) {
         if (!opticsLens) opticsLens = enhance(opticsTile, { lens: true });
-        if (mode === 'lens') opticsTile.style.setProperty('--lg-blur', '0px');
-        else opticsTile.style.removeProperty('--lg-blur');
       } else {
         opticsLens?.();
         opticsLens = null;
-        opticsTile.style.removeProperty('--lg-blur');
       }
+      // The scatter belongs to the mode, not to the tier: "только линза" means no
+      // scatter even when the engine cannot refract.
+      if (mode === 'lens') opticsTile.style.setProperty('--lg-blur', '0px');
+      else opticsTile.style.removeProperty('--lg-blur');
     }
     function updateOpticsNote() {
       const mode = opticsStage.dataset.mode;

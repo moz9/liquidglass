@@ -53,6 +53,7 @@ reference/
 tools/
   spring.mjs                   пересчёт пружин под любой стек (SwiftUI, Compose, WinUI, Flutter, CSS…)
   visual-check.mjs             скриншоты по матрице тем/доступности + замер кадров (Playwright)
+  material-check.mjs           проверка контракта материала: alpha вариантов, непрозрачные режимы, настройка (Playwright)
   check.mjs                    проверка согласованности репозитория
 ```
 
