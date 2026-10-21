@@ -6,7 +6,7 @@
 
 | API | Что есть | Уровень |
 |---|---|---|
-| 33+ (Android 13) | `RenderEffect` (blur, color filter, chain) + `RuntimeShader` (AGSL) | **T2**: blur + рефракция |
+| 33+ (Android 13) | `RenderEffect` (blur, color filter, chain) + `RuntimeShader` (AGSL) | кандидат **T2**: нужен отдельный источник фона и проверка пикселей |
 | 31–32 (Android 12) | `RenderEffect` без шейдеров | **T1** |
 | < 31 | нет GPU-размытия в UI-тулките | **T1-lite**: полупрозрачная заливка без живого blur (или библиотека с RenderScript-fallback), rim, тень |
 
@@ -21,6 +21,12 @@
 | Compose, готовая Liquid Glass-библиотека | `io.github.kyant0:backdrop` (Kyant0/AndroidLiquidGlass: lens, blur, vibrancy на AGSL) — проверь актуальный API в README |
 | Views (XML) | **BlurView** (Dimezis) + свои rim/тень, `SpringAnimation` (§3) |
 | Flutter / React Native / MAUI | [flutter.md](flutter.md), [cross-platform.md](cross-platform.md) |
+
+### Минимальный проверяемый проход
+
+1. Запиши только контент под navigation/toolbar в отдельный слой; не включай саму панель и её иконки в источник. Согласуй координаты и обновление при scroll/resize.
+2. На API 31–32 проверь blur этой копии и резкий foreground; без уже существующего совместимого shader renderer это T1. На API 33+ передай копию в AGSL input, затем отдельно проверь edge displacement.
+3. Сначала наклонная сетка и A/B на одном компоненте, потом остальной экран. `RenderEffect` на navigation-контейнере размывает его содержимое, а не соседние views. [RenderEffect](https://developer.android.com/reference/android/graphics/RenderEffect).
 
 ## 1. Compose: своя реализация (T0–T2)
 
@@ -134,7 +140,9 @@ fun Modifier.liquidGlass(
 private fun glassEffect(size: Size, radius: Float, style: GlassStyle, density: Float, shader: RuntimeShader?): RenderEffect {
     val sigma = style.blur * density
     val blur = android.graphics.RenderEffect.createBlurEffect(sigma, sigma, Shader.TileMode.CLAMP)
-    val saturate = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(style.saturation) })
+    val saturate = android.graphics.ColorMatrixColorFilter(
+        android.graphics.ColorMatrix().apply { setSaturation(style.saturation) }
+    )
     val frosted = android.graphics.RenderEffect.createColorFilterEffect(saturate, blur)
     if (style.tier < 2 || shader == null || Build.VERSION.SDK_INT < 33) return frosted.asComposeRenderEffect()
 

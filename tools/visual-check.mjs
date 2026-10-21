@@ -26,17 +26,7 @@ if (!url) {
   process.exit(1);
 }
 
-let chromium;
-try {
-  ({ chromium } = await import('playwright'));
-} catch {
-  try {
-    ({ chromium } = await import('@playwright/test'));
-  } catch {
-    console.error('Playwright is not installed. Run: npm i -D playwright && npx playwright install chromium');
-    process.exit(1);
-  }
-}
+import { chromium } from './browser-runtime.mjs';
 
 const out = resolve(opt('out', 'shots'));
 mkdirSync(out, { recursive: true });
@@ -117,3 +107,4 @@ for (const r of report.runs) {
   console.log(`${r.scheme.padEnd(5)} ${r.mode.padEnd(21)} tier=${r.tier ?? '-'}${f}${r.errors.length ? `  ERRORS: ${r.errors.join(' | ')}` : ''}`);
 }
 console.log(`\nScreenshots and report.json: ${out}\n(headless timing is indicative only: profile on real target devices)`);
+process.exitCode = report.runs.some((r) => r.errors.length > 0) ? 1 : 0;

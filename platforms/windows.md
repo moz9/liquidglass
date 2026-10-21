@@ -152,7 +152,7 @@ public sealed class GlassSurface : IDisposable
     void OnSizeChanged(object s, SizeChangedEventArgs e) =>
         _clip.Size = new Vector2((float)e.NewSize.Width, (float)e.NewSize.Height);
 
-    /// Смена вида light/dark, переход в T0 (альфа 0.97) — без пересоздания графа.
+    /// Смена вида light/dark, T0 uses alpha 1 and disables backdrop sampling; changing fill alone is insufficient.
     public void SetFill(Color fill) => _brush.Properties.InsertColor("Fill.Color", fill);
 
     /// col' = mix(luma, col, s) * k
@@ -299,11 +299,13 @@ Reduce Motion (`GlassTier.ReduceMotion`): `DampingRatio = 1`, `Period ≤ 250 м
 
 Composition-граф не поддерживает `DisplacementMapEffect` и пиксельные шейдеры над backdrop. Варианты:
 
-1. **«Полоса линзы» (экспериментально).** Второй backdrop-спрайт того же размера: `Transform2DEffect` масштабирует фон к центру на 3–5 % (`Matrix3x2.CreateScale(1.04f, center)`), результат ограничивается маской-кольцом по контуру (`CompositionMaskBrush` с `CompositionNineGridBrush` из PNG кольца с мягким градиентом — nine-grid сохраняет круглые углы при любом размере). Даёт сдвиг фона у кромки, похожий на линзирование. Проверяй на целевой версии Windows App SDK: поддержка комбинаций mask/nine-grid/backdrop в графах различается.
-2. **Известный фон** (своя картинка, обои, сцена): рисуй стекло в `CanvasControl`/`CanvasAnimatedControl` (Win2D) — `DisplacementMapEffect` с картой из [03-optics.md](../docs/03-optics.md#31-карта-смещений-для-svg-fedisplacementmap-win2d-skia-qt) + `GaussianBlurEffect`. Здесь рефракция точная.
-3. **Чужой рендер:** WebView2 с веб-эталоном (Chromium, T2) для отдельных экранов.
+1. **Собственный in-app источник.** Сначала сформируй отдельный visual содержимого страницы, исключив стекло и foreground. Эксперимент с `CompositionVisualSurface` этого visual и локальными edge-патчами показал преломление сетки в одном WinUI-проекте; это не готовый переносимый класс и не общая поддержка любого backdrop. Нужны padding области выборки, правильные local/source coordinates и восстановление состояния source при закрытии. Подробности и ограничения — в [маршруте Windows](../docs/emulation.md#windows-mica-acrylic-composition-wpf).
+2. **Явная текстура собственного фона.** Если приложение уже рисует сцену/картинку в Win2D, обрабатывай её `DisplacementMapEffect` и blur, а foreground рисуй после эффекта. Наличие этих API не доказывает корректную линзу: проверь координаты и реальные пиксели.
+3. **Уже используемый WebView2.** Внутри его страницы применим web-маршрут с собственным DOM-backdrop и pixel-test. Не заменяй native экран на WebView2 без согласованного изменения архитектуры.
 
-Если ни один не подходит — честно оставайся на T1: блик, тень, свечение и правильное движение дают 80 % впечатления.
+**Не использовать как рецепт:** `Transform2DEffect → BackdropBrush` отклонялся с `0x80070057`; промежуточный `StageBackdrop → VisualSurface → Transform` создавал граф, но давал одинаковые пиксели при identity и сдвиге 8 DIP. Ни тот, ни другой эксперимент не подтвердил линзу. Старое описание «полосы линзы» через масштабирование backdrop убрано именно по этой причине.
+
+Если в текущем renderer нет доступа к подходящему источнику, сохрани рабочий T1 и назови результат частичным с конкретным ограничением. Не приписывай ему процент сходства и не продолжай бесконечный подбор эффектов без нового источника пикселей.
 
 ## 3. WPF
 
@@ -347,17 +349,19 @@ static class Dwm
     <Grid x:Name="Scene"> <!-- контент, который окажется под стеклом --> </Grid>
 
     <Grid x:Name="Glass" Width="320" Height="62" VerticalAlignment="Bottom" Margin="0,0,0,12">
-        <Grid.Effect>                         <!-- внешний эффект: рефракция (§3.3), обрабатывает уже размытое -->
-            <local:LiquidGlassEffect x:Name="Lens" />
-        </Grid.Effect>
-        <Rectangle x:Name="Backdrop" Margin="-30">   <!-- с запасом 3σ, чтобы края не темнели -->
-            <Rectangle.Fill>
-                <VisualBrush x:Name="BackdropBrush" Visual="{Binding ElementName=Scene}"
-                             ViewboxUnits="Absolute" Stretch="None" AlignmentX="Left" AlignmentY="Top" />
-            </Rectangle.Fill>
-            <Rectangle.Effect><BlurEffect Radius="25" KernelType="Gaussian" RenderingBias="Performance" /></Rectangle.Effect>
-        </Rectangle>
-        <Border Background="#33FFFFFF" />             <!-- fill -->
+        <Grid x:Name="MaterialLayer" IsHitTestVisible="False">
+            <Grid.Effect>                     <!-- only the backdrop copy, never the foreground -->
+                <local:LiquidGlassEffect x:Name="Lens" />
+            </Grid.Effect>
+            <Rectangle x:Name="Backdrop" Margin="-30">   <!-- с запасом 3σ, чтобы края не темнели -->
+                <Rectangle.Fill>
+                    <VisualBrush x:Name="BackdropBrush" Visual="{Binding ElementName=Scene}"
+                                 ViewboxUnits="Absolute" Stretch="None" AlignmentX="Left" AlignmentY="Top" />
+                </Rectangle.Fill>
+                <Rectangle.Effect><BlurEffect Radius="25" KernelType="Gaussian" RenderingBias="Performance" /></Rectangle.Effect>
+            </Rectangle>
+        </Grid>
+        <Border Background="#33FFFFFF" IsHitTestVisible="False" /> <!-- fill above filtered backdrop -->
         <ContentPresenter />
     </Grid>
 </Grid>

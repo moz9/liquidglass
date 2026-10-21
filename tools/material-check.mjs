@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Material contract check for a page built with the Liquid Glass reference CSS/JS.
 //
-//   node tools/material-check.mjs <url> [--width 1280] [--height 860] [--out shots]
+//   node tools/material-check.mjs <url> [--require-complete] [--width 1280] [--height 860] [--out shots]
 //
 // Verifies, on real computed styles and real interactions:
 //
@@ -42,22 +42,13 @@ if (!url) {
   process.exit(1);
 }
 
-let chromium;
-try {
-  ({ chromium } = await import('playwright'));
-} catch {
-  try {
-    ({ chromium } = await import('@playwright/test'));
-  } catch {
-    console.error('Playwright is not installed. Run: npm i -D playwright && npx playwright install chromium');
-    process.exit(1);
-  }
-}
+import { chromium } from './browser-runtime.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const width = Number(opt('width', 1280));
 const height = Number(opt('height', 860));
 const out = resolve(opt('out', 'shots'));
+const requireComplete = args.includes('--require-complete');
 mkdirSync(out, { recursive: true });
 
 const results = [];
@@ -114,7 +105,8 @@ const open = async ({ scheme = 'light', features, viewport = { width, height } }
     const cdp = await page.context().newCDPSession(page);
     await cdp.send('Emulation.setEmulatedMedia', { features });
   }
-  await page.goto(url, { waitUntil: 'networkidle' });
+  const response = await page.goto(url, { waitUntil: 'networkidle' });
+  if (!response?.ok()) throw new Error(`Page did not load successfully: HTTP ${response?.status() ?? 'unknown'}`);
   await page.waitForTimeout(600);
   return page;
 };
@@ -266,6 +258,7 @@ const edgeIsSilent = (e) => !!e && !samples(e.backdrop);
 const tileIsSilent = (c) => !!c && !samples(c);
 
 // --- 1. the density ends: transparent changes every variant, dense matches tokens ---
+try {
 for (const scheme of ['light', 'dark']) {
   const page = await open({ scheme });
   const hasDensity = await page.evaluate(() =>
@@ -286,7 +279,8 @@ for (const scheme of ['light', 'dark']) {
       const dd = dense[name];
       if (!t || !dd) { skip(`density changes ${name} (${scheme})`, 'variant not found on the page'); continue; }
       // The primary action keeps its alpha on purpose: its label must stay readable.
-      const ok = name === 'prominent' ? t.alpha === dd.alpha : t.alpha < dd.alpha;
+      const valid = Number.isFinite(t.alpha) && Number.isFinite(dd.alpha);
+      const ok = valid && (name === 'prominent' ? t.alpha === dd.alpha : t.alpha < dd.alpha);
       check(`density changes ${name} (${scheme})`, ok, `transparent=${t.alpha} dense=${dd.alpha}`);
     }
     if (expected) {
@@ -334,7 +328,7 @@ for (const scheme of ['light', 'dark']) {
     const edge = await readEdge(page);
     if (edge) {
       check(`opaque mode ${label} (${scheme}): the scroll edge does not sample the backdrop`, edgeIsSilent(edge), `"${edge.backdrop.slice(0, 28)}"`);
-    }
+    } else skip(`opaque mode ${label} (${scheme}): scroll edge`, 'no scroll edge on the page');
     // The pressed switch thumb is a lens of its own.
     const thumb = await pressThumb(page);
     if (thumb) {
@@ -344,7 +338,7 @@ for (const scheme of ['light', 'dark']) {
         check(`opaque mode ${label} (${scheme}): the pressed thumb is opaque and samples nothing`, thumbIsOpaque(thumb),
           `alpha=${alphaOf(thumb.background)} backdrop="${thumb.backdrop.slice(0, 28)}"`);
       }
-    }
+    } else skip(`opaque mode ${label} (${scheme}): pressed thumb`, 'no switch on the page');
     await page.close();
   }
 }
@@ -587,11 +581,14 @@ for (const w of [390, 360, 320]) {
   await page3.close();
 }
 
-await browser.close();
+} finally {
+  await browser.close();
+}
 
 const failed = results.filter((r) => r.ok === false);
 const skipped = results.filter((r) => r.ok === null);
 writeFileSync(join(out, 'material-check.json'), JSON.stringify({ url, results }, null, 2));
 console.log(`\n${results.length - failed.length - skipped.length}/${results.length - skipped.length} checks passed, ${skipped.length} skipped`);
 if (errors.length) console.log(`page errors:\n  ${errors.join('\n  ')}`);
-process.exit(failed.length || errors.length ? 1 : 0);
+if (requireComplete && skipped.length) console.error('Complete coverage required: skipped sections are a failure.');
+process.exit(failed.length || errors.length || (requireComplete && skipped.length) ? 1 : 0);
